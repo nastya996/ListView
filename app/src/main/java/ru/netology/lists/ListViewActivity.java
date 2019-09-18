@@ -20,12 +20,6 @@ import java.util.Map;
 
 public class ListViewActivity extends AppCompatActivity {
 
-    ListView listView;
-    private String[] from;
-    private final String ATTRIBUTE_TITLE_TEXT = "title";
-    private final String ATTRIBUTE_SUBTITLE_TEXT = "subtitle";
-
-    int[] to = {R.id.text_1, R.id.text_2};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,37 +28,33 @@ public class ListViewActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        listView = findViewById(R.id.listView_text_1);
         ListView list = findViewById(R.id.list);
 
-        String[] values = prepareContent();
+        List<Map<String, String>> values = prepareContent();
 
-        ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>(values.length);
-        Map<String, String> mapText;
+        String[] from = {"text_1", "text_2"};
+        int[] to = {R.id.text_1, R.id.text_2};
+        BaseAdapter listContentAdapter = createAdapter(values, from, to);
 
-        for (int i = 0; i < values.length; i++) {
-            mapText = new HashMap<>();
+        list.setAdapter(listContentAdapter);
+    }
 
-            mapText.put(ATTRIBUTE_TITLE_TEXT, values[i]);
-            mapText.put(ATTRIBUTE_SUBTITLE_TEXT, "" + values[i].length());
-            data.add(mapText);
+    private BaseAdapter createAdapter(List<Map<String, String>> values, String[] from, int[] to) {
+        return new SimpleAdapter(this, values, R.layout.list, from, to);
+    }
 
+    private List<Map<String, String>> prepareContent() {
+        String[] strings = getString(R.string.large_text).split("\n\n");
 
+        List<Map<String, String>> list = new ArrayList<>();
+
+        for (int i = 0; i < strings.length; i++) {
+            Map<String, String> map = new HashMap<String, String>();
+            map.put("text_1", strings[i]);
+            map.put("text_2",  String.valueOf(strings[i].length()));
+            list.add(map);
         }
-        from = new String[]{ATTRIBUTE_TITLE_TEXT, ATTRIBUTE_SUBTITLE_TEXT};
 
-        BaseAdapter listContentAdapter = createAdapter(data);
-        listView.setAdapter(listContentAdapter);
-
-    }
-
-
-    private BaseAdapter createAdapter(List<Map<String, String>> data) {
-        return new SimpleAdapter(this, data, R.layout.list,
-                from, to);
-    }
-
-    private String[] prepareContent() {
-        return getString(R.string.large_text).split("\n\n");
+        return list;
     }
 }
